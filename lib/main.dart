@@ -1,3 +1,4 @@
+import 'package:apiflutter/add_screen.dart';
 import 'package:flutter/material.dart';
 import 'user.dart';
 import 'user_service.dart';
@@ -10,15 +11,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter User API Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: UserListScreen(),
+     initialRoute: '/',
+      routes: {
+        '/': (context) => UserListScreen(),
+      }
     );
   }
 }
+
 
 class UserListScreen extends StatefulWidget {
   @override
@@ -45,17 +51,29 @@ class _UserListScreenState extends State<UserListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('User List'),
+      backgroundColor: Colors.amberAccent,
+      appBar: AppBar(backgroundColor: Colors.blueAccent,
+        title: const Text('Lista de Usuário', style: TextStyle(fontWeight: FontWeight.bold),),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
           _buildUserList(),
-          _buildAddUserForm(),
         ],
       ),
     );
   }
+
 
   Widget _buildUserList() {
     return Expanded(
@@ -112,23 +130,24 @@ class _UserListScreenState extends State<UserListScreen> {
         user.email; // Assuming email cannot be updated, disable this field
     pictureController.text = user.picture!;
 
-    showDialog(
-      context: context,
+    showDialog( 
+      context: context, 
       builder: (context) => AlertDialog(
-        title: Text("Edit User"),
+        backgroundColor: Colors.red,
+        title: Text("Editar Usuário", style: TextStyle(fontWeight: FontWeight.bold),),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextFormField(
                   controller: tituloController,
-                  decoration: InputDecoration(labelText: 'Title')),
+                  decoration: InputDecoration(labelText: 'Titulo')),             
               TextFormField(
                   controller: firstnameController,
-                  decoration: InputDecoration(labelText: 'First Name')),
+                  decoration: InputDecoration(labelText: 'Nome')),
               TextFormField(
                   controller: lastnameController,
-                  decoration: InputDecoration(labelText: 'Last Name')),
+                  decoration: InputDecoration(labelText: 'Sobrenome')),
               TextFormField(
                   controller: pictureController,
                   decoration: InputDecoration(labelText: 'Picture URL')),
@@ -137,7 +156,7 @@ class _UserListScreenState extends State<UserListScreen> {
         ),
         actions: <Widget>[
           TextButton(
-            child: Text("Update"),
+            child: Text("Atualizar"),
             onPressed: () {
               _updateUser(user);
               Navigator.of(context).pop();
@@ -162,20 +181,20 @@ class _UserListScreenState extends State<UserListScreen> {
         lastnameController.text.isNotEmpty &&
         pictureController.text.isNotEmpty) {
       userService.updateUser(user.id!, dataToUpdate).then((updatedUser) {
-        _showSnackbar('User updated successfully!');
+        _showSnackbar('Atualizado com Sucesso!');
         _refreshUserList();
       }).catchError((error) {
-        _showSnackbar('Failed to update user: $error');
+        _showSnackbar('Falha na atualização: $error');
       });
     }
   }
 
   void _deleteUser(String id) {
     userService.deleteUser(id).then((_) {
-      _showSnackbar('User deleted successfully!');
+      _showSnackbar('Usuário deletado com Sucesso!');
       _refreshUserList();
     }).catchError((error) {
-      _showSnackbar('Failed to delete user.');
+      _showSnackbar('Deletar falhou.');
     });
   }
 
@@ -186,16 +205,16 @@ class _UserListScreenState extends State<UserListScreen> {
         children: <Widget>[
           TextFormField(
               controller: firstnameController,
-              decoration: InputDecoration(labelText: 'First Name')),
+              decoration: InputDecoration(labelText: 'Nome')),
           TextFormField(
               controller: lastnameController,
-              decoration: InputDecoration(labelText: 'Last Name')),
+              decoration: InputDecoration(labelText: 'Sobrenome')),
           TextFormField(
               controller: emailController, // Added email input field
               decoration: InputDecoration(labelText: 'Email')),
           ElevatedButton(
-            onPressed: _addUser,
-            child: Text('Add User'),
+            onPressed: _addUser,          
+            child: Text('Adicionar'),
           ),
         ],
       ),
@@ -217,13 +236,13 @@ class _UserListScreenState extends State<UserListScreen> {
         picture: pictureController.text, // Incluído, assumindo que é necessário
       ))
           .then((newUser) {
-        _showSnackbar('User added successfully!');
+        _showSnackbar('Usuário adicionado com Sucesso!');
         _refreshUserList();
       }).catchError((error) {
-        _showSnackbar('Failed to add user: $error');
+        _showSnackbar('Usuário falhou: $error');
       });
     } else {
-      _showSnackbar('Please fill in all fields.');
+      _showSnackbar('Por Favor Preencha todos os Campos.');
     }
   }
 

@@ -6,9 +6,9 @@ class UserService {
   final String apiUrl = "https://dummyapi.io/data/v1";
   final Map<String, String> headers = {
     'Content-Type': 'application/json',
-    'app-id': '66339f4c777d45485ff7532b',
+    'app-id': '6642dc579e22ac397b786275',
   };
-
+//professora: 66339f4c777d45485ff7532b
   // Obter lista de usuários
   Future<List<User>> getUsers(
       {int? page, String? sortBy, String? created}) async {
